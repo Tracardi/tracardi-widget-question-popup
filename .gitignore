@@ -10,7 +10,7 @@
 
 # production
 /build
-/widget
+
 
 # misc
 .DS_Store
@@ -26,3 +26,4 @@ yarn-error.log*
 # parcel
 .cache
 .idea
+.vs
