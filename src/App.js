@@ -4,6 +4,7 @@ import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
 import Snackbar from "@material-ui/core/Snackbar";
 import SnackbarContent from "@material-ui/core/SnackbarContent";
+import Fade from "@material-ui/core/Fade";
 
 
 function App({domElement}) {
@@ -21,11 +22,11 @@ function App({domElement}) {
     const content = domElement.getAttribute("data-content");
     const posHorizontal = domElement.getAttribute("data-horizontal-position");
     const posVertical = domElement.getAttribute("data-vertical-position");
-    const popupLifetime = parseInt(domElement.getAttribute("data-popup-lifetime")) * 1000;
+    const popupLifetime = parseInt(domElement.getAttribute("data-popup-lifetime"), 6) * 1000;
     const eventType = domElement.getAttribute("data-event-type");
     const saveEvent = domElement.getAttribute("data-save-event");
     const profileId = domElement.getAttribute("data-profile-id");
-    const boxBgColor = domElement.getAttribute("data-box-bg-color") || "white";
+    const boxBgColor = domElement.getAttribute("data-bg-color") || "white";
     const textColor = domElement.getAttribute("data-text-color") || "black";
     const titleSize = domElement.getAttribute("data-title-size") || "22px";
     const questionSize = domElement.getAttribute("data-question-size") || "15px";
@@ -78,7 +79,7 @@ function App({domElement}) {
     }
 
     const handleClose = (event, reason) => {
-        if (reason === 'clickaway') {
+        if (reason === 'clickaway' || reason === "timeout") {
             setOpen(false);
         }
     };
@@ -96,37 +97,39 @@ function App({domElement}) {
                 flexDirection: "row",
                 justifyContent: "center",
                 maxWidth: boxMaxWidth,
-                padding: "0px 20px"
+                padding: "0px 10px"
             }}
             elevation={boxElevation}
             message={
-                <Box
-                    sx={{
-                        display: "flex",
-                        flexDirection: "column",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        color: textColor
-                    }}
-                >
-                    <div style={{fontSize: titleSize, padding: "10px 0 0 6px"}}>{popupTitle}</div>
-                    <p style={{overflow: "scroll", maxHeight: 103, fontSize: questionSize}}>{content}</p>
+                <Fade in={open} {...(open ? {timeout: 1500} : {})}>
                     <Box
                         sx={{
-                            alignSelf: "center",
-                            margin: "10px",
                             display: "flex",
-                            flexDirection: "row",
-                            gap: "20px",
+                            flexDirection: "column",
+                            justifyContent: "center",
+                            alignItems: "center",
                             color: textColor
                         }}
                     >
-                        <Button variant={leftBtnType} onClick={() => sendEvent(leftBtnText)}
-                                color="inherit">{leftBtnText}</Button>
-                        <Button variant={rightBtnType} onClick={() => sendEvent(rightBtnText)}
-                                color="inherit">{rightBtnText}</Button>
+                        <div style={{fontSize: titleSize, padding: "10px 0 0 6px"}}>{popupTitle}</div>
+                        <p style={{overflow: "scroll", maxHeight: 103, fontSize: questionSize}}>{content}</p>
+                        <div
+                            style={{
+                                alignSelf: "center",
+                                margin: "10px",
+                                display: "flex",
+                                flexDirection: "row",
+                                gap: "20px",
+                                color: textColor
+                            }}
+                        >
+                            <Button variant={leftBtnType} onClick={() => sendEvent(leftBtnText)}
+                                    color="inherit">{leftBtnText}</Button>
+                            <Button variant={rightBtnType} onClick={() => sendEvent(rightBtnText)}
+                                    color="inherit">{rightBtnText}</Button>
+                        </div>
                     </Box>
-                </Box>
+                </Fade>
             }
         />
     </Snackbar>;
