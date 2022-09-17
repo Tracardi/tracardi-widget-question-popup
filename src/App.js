@@ -9,7 +9,7 @@ import Fade from "@material-ui/core/Fade";
 
 function App({domElement}) {
 
-    const [open, setOpen] = React.useState(true);
+    const [openQuestionPopUp, setOpenQuestionPopUp] = React.useState(true);
 
     const api_url = domElement.getAttribute("data-api-url") || "http://localhost:8686";
     const sourceId = domElement.getAttribute("data-source-id");
@@ -22,7 +22,7 @@ function App({domElement}) {
     const content = domElement.getAttribute("data-content");
     const posHorizontal = domElement.getAttribute("data-horizontal-position");
     const posVertical = domElement.getAttribute("data-vertical-position");
-    const popupLifetime = parseInt(domElement.getAttribute("data-popup-lifetime"), 6) * 1000;
+    const popupLifetime = parseInt(domElement.getAttribute("data-popup-lifetime"), 10) * 1000;
     const eventType = domElement.getAttribute("data-event-type");
     const saveEvent = domElement.getAttribute("data-save-event");
     const profileId = domElement.getAttribute("data-profile-id");
@@ -74,19 +74,24 @@ function App({domElement}) {
         } catch (e) {
             console.error(e)
         } finally {
-            setOpen(false);
+            setOpenQuestionPopUp(false);
         }
     }
 
     const handleClose = (event, reason) => {
-        if (reason === 'clickaway' || reason === "timeout") {
-            setOpen(false);
+
+        if (reason === 'clickaway') {
+            setOpenQuestionPopUp(false);
+        }
+
+        if (reason === 'timeout') {
+            setOpenQuestionPopUp(false);
         }
     };
 
     return <Snackbar
         anchorOrigin={{vertical: posVertical, horizontal: posHorizontal}}
-        open={open}
+        open={openQuestionPopUp}
         onClose={handleClose}
         autoHideDuration={popupLifetime}
     >
@@ -101,7 +106,7 @@ function App({domElement}) {
             }}
             elevation={boxElevation}
             message={
-                <Fade in={open} {...(open ? {timeout: 1500} : {})}>
+                <Fade in={openQuestionPopUp} {...(openQuestionPopUp ? {timeout: 1500} : {})}>
                     <Box
                         sx={{
                             display: "flex",
