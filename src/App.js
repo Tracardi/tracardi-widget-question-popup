@@ -47,9 +47,6 @@ function App({domElement}) {
                     "session": {
                         "id": sessionId
                     },
-                    "metadata": {
-                        "ip": "254.23.12.188"
-                    },
                     "profile": {
                         "id": profileId
                     },
