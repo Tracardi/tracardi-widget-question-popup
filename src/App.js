@@ -97,7 +97,7 @@ function App({domElement}) {
     >
         <SnackbarContent
             style={{
-                backgroundColor: boxBgColor,
+                background: boxBgColor,
                 display: "flex",
                 flexDirection: "row",
                 justifyContent: "center",
