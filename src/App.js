@@ -26,6 +26,17 @@ function App({domElement}) {
     const eventType = domElement.getAttribute("data-event-type");
     const saveEvent = domElement.getAttribute("data-save-event");
     const profileId = domElement.getAttribute("data-profile-id");
+    const borderRadius = domElement.getAttribute("data-border-radius") || 0;
+    const borderWidth = domElement.getAttribute("data-border-width") || 0;
+    const borderColor = domElement.getAttribute("data-border-color") || "transparent";
+    const paddingLeft = domElement.getAttribute("data-padding-left") || 0;
+    const paddingRight = domElement.getAttribute("data-padding-right") || 0;
+    const paddingTop = domElement.getAttribute("data-padding-top") || 0;
+    const paddingBottom = domElement.getAttribute("data-padding-bottom") || 0;
+    const marginLeft = domElement.getAttribute("data-margin-left") || 0;
+    const marginRight = domElement.getAttribute("data-margin-right") || 0;
+    const marginTop = domElement.getAttribute("data-margin-top") || 0;
+    const marginBottom = domElement.getAttribute("data-margin-bottom") || 0;
     const boxBgColor = domElement.getAttribute("data-bg-color") || "white";
     const textColor = domElement.getAttribute("data-text-color") || "black";
     const titleSize = domElement.getAttribute("data-title-size") || "22px";
@@ -94,15 +105,21 @@ function App({domElement}) {
         open={openQuestionPopUp}
         onClose={handleClose}
         autoHideDuration={popupLifetime}
+        style={{
+
+        }}
     >
         <SnackbarContent
             style={{
                 background: boxBgColor,
+                borderRadius: `${borderRadius}px`,
+                border: `${borderWidth}px solid ${borderColor}`,
                 display: "flex",
                 flexDirection: "row",
                 justifyContent: "center",
                 maxWidth: boxMaxWidth,
-                padding: "0px 10px"
+                padding: `${paddingTop}px ${paddingRight}px ${paddingBottom}px ${paddingLeft}px`,
+                margin: `${marginTop}px ${marginRight}px ${marginBottom}px ${marginLeft}px`
             }}
             elevation={boxElevation}
             message={
