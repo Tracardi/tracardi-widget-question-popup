@@ -49,15 +49,13 @@ function ContactQuestion({content, onAnswer}) {
     const [text, setText] = React.useState("");
 
     return <div style={{padding: 20}}>
-        <div style={{padding: 20}}>
-            <div style={{fontSize: 16}}>{content}</div>
-        </div>
+        <div style={{fontSize: 16, paddingBottom: 20}}>{content}</div>
 
-               <div style={{display: "flex", alignItems: "center", gap: 5}}>
-                <TextField size="small" label="e-mail" variant="outlined" value={text}
-                           onChange={(e) => setText(e.target.value)}/>
-                <Button size="small" variant="contained" onClick={() => onAnswer(text)}>Submit</Button>
-            </div>
+        <div style={{display: "flex", alignItems: "center", gap: 5}}>
+            <TextField size="small" label="e-mail" variant="outlined" value={text}
+                       onChange={(e) => setText(e.target.value)}/>
+            <Button size="small" variant="contained" onClick={() => onAnswer(text)}>Submit</Button>
+        </div>
     </div>
 }
 
@@ -76,7 +74,7 @@ function App({domElement}) {
     const posVertical = domElement.getAttribute("data-vertical-position");
     const popupLifetime = parseInt(domElement.getAttribute("data-popup-lifetime") || 5, 10) * 1000;
     const answerEventType = domElement.getAttribute("data-answer-event-type") || 'question-answered';
-    const contactEventType = domElement.getAttribute("data-contact-event-type") || 'email-contact-delivered';
+    const contactEventType = domElement.getAttribute("data-contact-event-type") || 'profile-update';
     const saveEvent = domElement.getAttribute("data-save-event");
     const profileId = domElement.getAttribute("data-profile-id");
     const borderRadius = domElement.getAttribute("data-border-radius") || 10;
@@ -105,10 +103,10 @@ function App({domElement}) {
     const [popupTimeout, setPopupTimeout] = React.useState(popupLifetime);
 
     const handleAnswer = async (answer) => {
-        await sendEvent(answerEventType, "answer", answer)
-        if(contactDisplayedWhen === 'both' || contactDisplayedWhen.toLowerCase() === answer.toLowerCase()) {
+        await sendEvent(answerEventType, {answer: answer})
+        if (contactDisplayedWhen === 'both' || contactDisplayedWhen.toLowerCase() === answer.toLowerCase()) {
             setAnswer(answer)
-            setPopupTimeout(120* 1000)
+            setPopupTimeout(120 * 1000)
             setDisplayContactQuestion(true)
         } else {
             setOpenQuestionPopUp(false)
@@ -116,11 +114,13 @@ function App({domElement}) {
     }
 
     const handleContactSubmit = async (contact) => {
-        await sendEvent(contactEventType, "email", contact)
+        if(contact.trim()) {
+            await sendEvent(contactEventType, {contact: {email: {main: contact}}})
+        }
         setOpenQuestionPopUp(false)
     }
 
-    const sendEvent = async (eventType, key, answer) => {
+    const sendEvent = async (eventType, payload) => {
 
         try {
             const response = await fetch(`${api_url}/track`, {
@@ -143,9 +143,7 @@ function App({domElement}) {
                     "events": [
                         {
                             "type": eventType,
-                            "properties": {
-                                [key]: answer
-                            },
+                            "properties": payload,
                             "options": {
                                 "saveEvent": saveEvent === 'yes'
                             }
@@ -175,61 +173,59 @@ function App({domElement}) {
     };
 
     return <ThemeProvider theme={theme}>
-    <Snackbar
-        anchorOrigin={{vertical: posVertical, horizontal: posHorizontal}}
-        open={openQuestionPopUp}
-        onClose={handleClose}
-        autoHideDuration={popupTimeout}
-        style={{
-
-        }}
-    >
-        <SnackbarContent
-            style={{
-                background: boxBgColor,
-                borderRadius: `${borderRadius}px`,
-                border: `${borderWidth}px solid ${borderColor}`,
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "center",
-                maxWidth: boxMaxWidth,
-                padding: `${paddingTop}px ${paddingRight}px ${paddingBottom}px ${paddingLeft}px`,
-                margin: `${marginTop}px ${marginRight}px ${marginBottom}px ${marginLeft}px`
-            }}
-            elevation={boxElevation}
-            message={
-                <Fade in={openQuestionPopUp} {...(openQuestionPopUp ? {timeout: 1500} : {})}>
-                    <Box
-                        sx={{
-                            display: "flex",
-                            flexDirection: "column",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            color: textColor,
-                        }}
-                    >
-                        {displayContactQuestion
-                            ? <ContactQuestion
-                                content={contactText}
-                                onAnswer={handleContactSubmit}
-                            />
-                            : <Question
-                                titleSize={titleSize}
-                                popupTitle={popupTitle}
-                                questionSize={questionSize}
-                                content={content}
-                                textColor={textColor}
-                                leftBtnType={leftBtnType}
-                                leftBtnText={leftBtnText}
-                                rightBtnType={rightBtnType}
-                                rightBtnText={rightBtnText}
-                                onAnswer={handleAnswer}
-                            />}
-                    </Box>
-                </Fade>
-            }
-        />
-    </Snackbar>
+        <Snackbar
+            anchorOrigin={{vertical: posVertical, horizontal: posHorizontal}}
+            open={openQuestionPopUp}
+            onClose={handleClose}
+            autoHideDuration={popupTimeout}
+            style={{}}
+        >
+            <SnackbarContent
+                style={{
+                    background: boxBgColor,
+                    borderRadius: `${borderRadius}px`,
+                    border: `${borderWidth}px solid ${borderColor}`,
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    maxWidth: boxMaxWidth,
+                    padding: `${paddingTop}px ${paddingRight}px ${paddingBottom}px ${paddingLeft}px`,
+                    margin: `${marginTop}px ${marginRight}px ${marginBottom}px ${marginLeft}px`
+                }}
+                elevation={boxElevation}
+                message={
+                    <Fade in={openQuestionPopUp} {...(openQuestionPopUp ? {timeout: 1500} : {})}>
+                        <Box
+                            sx={{
+                                display: "flex",
+                                flexDirection: "column",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                color: textColor,
+                            }}
+                        >
+                            {displayContactQuestion
+                                ? <ContactQuestion
+                                    content={contactText}
+                                    onAnswer={handleContactSubmit}
+                                />
+                                : <Question
+                                    titleSize={titleSize}
+                                    popupTitle={popupTitle}
+                                    questionSize={questionSize}
+                                    content={content}
+                                    textColor={textColor}
+                                    leftBtnType={leftBtnType}
+                                    leftBtnText={leftBtnText}
+                                    rightBtnType={rightBtnType}
+                                    rightBtnText={rightBtnText}
+                                    onAnswer={handleAnswer}
+                                />}
+                        </Box>
+                    </Fade>
+                }
+            />
+        </Snackbar>
     </ThemeProvider>;
 
 }
