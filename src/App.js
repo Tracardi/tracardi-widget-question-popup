@@ -25,7 +25,7 @@ export const theme = createTheme({
 function Question({titleSize, popupTitle, questionSize, content, textColor, leftBtnType, leftBtnText, rightBtnType, rightBtnText, onAnswer}) {
     return <>
         <div style={{fontSize: titleSize, padding: "10px 0 0 6px"}}>{popupTitle}</div>
-        <p style={{overflow: "scroll", maxHeight: 103, fontSize: questionSize, padding: "10px 20px"}}>{content}</p>
+        <p style={{overflow: "auto", width: "100%", maxHeight: 103, fontSize: questionSize, padding: "10px 20px"}}>{content}</p>
         <div
             style={{
                 alignSelf: "center",
